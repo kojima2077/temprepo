@@ -158,13 +158,32 @@ export async function loadOptionalPayloads(p, chain, log) {
   const kstuff = await mapElf("kstuff.elf", p, chain);
   const shadowmount = await mapElf("shadowmountplus.elf", p, chain);
   const etaHEN = await mapElf("etaHEN.elf", p, chain);
-  await sendElf("kstuff.elf", kstuff, p, chain);
-  log("kstuff.elf sent");
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-  await sendElf("shadowmountplus.elf", shadowmount, p, chain);
-  log("shadowmountplus.elf sent");
+  const ps5sx2Helper = await mapElf("PS5SXHelper.elf", p, chain); // <-- Added mapping here
+	changed to load etaHen first
   await sendElf("etaHEN.elf", etaHEN, p, chain);
   log("etaHEN.elf sent");
+  
+   // 10 second delay after loading etaHEN
+  await new Promise((resolve) => setTimeout(resolve, 10000));
+  
+  await sendElf("kstuff.elf", kstuff, p, chain);
+  log("kstuff.elf sent");
+  
+    // 5 second delay after loading kstuff
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+  
+  await sendElf("shadowmountplus.elf", shadowmount, p, chain);
+  log("shadowmountplus.elf sent");  
+  // 10 second delay after loading shadowmount
+  await new Promise((resolve) => setTimeout(resolve, 10000));
+  
+  
+   // 5. Load PS5SX2 Helper
+  await sendElf("PS5SXHelper.elf", ps5sx2Helper, p, chain); // <-- Added socket transmission here
+  log("PS5SXHelper.elf sent");
+  
+  // Optional: Add a safety delay for PS5SX2 initialization framework to settle down
+  await new Promise((resolve) => setTimeout(resolve, 3000));
 }
 
 function patchShellcode(blob, symbols) {
